@@ -1,7 +1,10 @@
 package slack
 
 import (
+	"encoding/json"
 	"fmt"
+	"log"
+	"net/http"
 	"strings"
 
 	"github.com/nlopes/slack"
@@ -82,5 +85,33 @@ func sendResponse(slackClient *slack.RTM, message, slackChannel string) {
 	//         You could call an external API here, or create your own string response. Anything goes!
 	//      2. STRETCH: Write a goroutine that calls an external API based on the data received in this function.
 	// ===============================================================
-	// END SLACKBOT CUSTOM CODE
+	// END SLACKBOT CUSTOM CODE\
+	url := "api.giphy.com/v1/gifs/search"
+	req, err := http.NewRequest("GET", url, nil)
+
+	if err != nil {
+		log.Fatal("NewRequest: ", err)
+		return
+	}
+
+	q := req.URL.Query()
+	q.Add("api_key", "4AZiEXqeJDmw6I1tzPAWobx790tH98f4")
+	q.Add("q", message)
+
+	client := &http.Client{}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Fatal("Do: ", err)
+		return
+	}
+
+	defer resp.Body.Close()
+
+	var Gif GIF
+
+	if err := json.NewDecoder(resp.Body).Decode(&Gif); err != nil {
+		log.Println(err)
+	}
+	println(data)
 }
