@@ -16,7 +16,7 @@ import (
    NOTE: command_arg_1 and command_arg_2 represent optional parameteras that you define
    in the Slack API UI
 */
-const helpMessage = "type in '@BOT_NAME <command_arg_1> <command_arg_2>'"
+const helpMessage = "type in '@BOT_NAME <command_arg_1> to get a random gif of that type'"
 
 type ImageData struct {
 	URL    string `json:"url"`
@@ -115,6 +115,9 @@ func sendHelp(slackClient *slack.RTM, message, slackChannel string) {
 
 func sendResponse(slackClient *slack.RTM, message, slackChannel string) {
 	command := strings.ToLower(message)
+	message = strings.ReplaceAll(message, " ", "%20")
+	println(message)
+
 	println("[RECEIVED] sendResponse:", command)
 
 	// START SLACKBOT CUSTOM CODE
@@ -152,5 +155,6 @@ func sendResponse(slackClient *slack.RTM, message, slackChannel string) {
 	if err := json.NewDecoder(resp.Body).Decode(&data); err != nil {
 		log.Println(err)
 	}
+	println(data.Pagination.TotalCount)
 	slackClient.SendMessage(slackClient.NewOutgoingMessage(data.Data[rand.Intn(9)].Images.FixedHeightDownsampled.URL, slackChannel))
 }
