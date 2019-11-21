@@ -6,6 +6,7 @@ import (
 	"log"
 	"math/rand"
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/nlopes/slack"
@@ -16,7 +17,7 @@ import (
    NOTE: command_arg_1 and command_arg_2 represent optional parameteras that you define
    in the Slack API UI
 */
-const helpMessage = "type in '@BOT_NAME <command_arg_1> to get a random gif of that type'"
+const helpMessage = "type in '@BOT_NAME <command_arg_1> to get a random gif of that query, prefix your query with specific if you want the first result'"
 
 type ImageData struct {
 	URL    string `json:"url"`
@@ -114,8 +115,13 @@ func sendHelp(slackClient *slack.RTM, message, slackChannel string) {
 // sendResponse is NOT unimplemented --- write code in the function body to complete!
 
 func sendResponse(slackClient *slack.RTM, message, slackChannel string) {
+	specific := strings.Contains(message, "specific")
 	command := strings.ToLower(message)
 	message = strings.ReplaceAll(message, " ", "%20")
+
+	if specific {
+		message = strings.TrimPrefix(message, "specific%20")
+	}
 	println(message)
 
 	println("[RECEIVED] sendResponse:", command)
@@ -128,7 +134,7 @@ func sendResponse(slackClient *slack.RTM, message, slackChannel string) {
 	//      2. STRETCH: Write a goroutine that calls an external API based on the data received in this function.
 	// ===============================================================
 	// END SLACKBOT CUSTOM CODE\
-	url := fmt.Sprintf("http://api.giphy.com/v1/gifs/search?api_key=4AZiEXqeJDmw6I1tzPAWobx790tH98f4&q=%s&limit=10", message)
+	url := fmt.Sprintf("http://api.giphy.com/v1/gifs/search?api_key=%s&q=%s&limit=10", os.Getenv("API_KEY"), message)
 	req, err := http.NewRequest("GET", url, nil)
 
 	if err != nil {
@@ -156,5 +162,9 @@ func sendResponse(slackClient *slack.RTM, message, slackChannel string) {
 		log.Println(err)
 	}
 	println(data.Pagination.TotalCount)
-	slackClient.SendMessage(slackClient.NewOutgoingMessage(data.Data[rand.Intn(9)].Images.FixedHeightDownsampled.URL, slackChannel))
+	if specific {
+		slackClient.SendMessage(slackClient.NewOutgoingMessage(data.Data[0].Images.FixedHeightDownsampled.URL, slackChannel))
+	} else {
+		slackClient.SendMessage(slackClient.NewOutgoingMessage(data.Data[rand.Intn(9)].Images.FixedHeightDownsampled.URL, slackChannel))
+	}
 }
