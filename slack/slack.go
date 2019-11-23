@@ -10,6 +10,46 @@ import (
 	"github.com/nlopes/slack"
 )
 
+// ImageData for API
+type ImageData struct {
+	URL    string `json:"url"`
+	Width  string `json:"width"`
+	Height string `json:"height"`
+	Size   string `json:"size"`
+	Frames string `json:"frames"`
+}
+
+// Gif for API
+type Gif struct {
+	Type               string `json:"type"`
+	Id                 string `json:"id"`
+	URL                string `json:"url"`
+	Tags               string `json:"tags"`
+	BitlyGifURL        string `json:"bitly_gif_url"`
+	BitlyFullscreenURL string `json:"bitly_fullscreen_url"`
+	BitlyTiledURL      string `json:"bitly_tiled_url"`
+	Images             struct {
+		Original               ImageData `json:"original"`
+		FixedHeight            ImageData `json:"fixed_height"`
+		FixedHeightStill       ImageData `json:"fixed_height_still"`
+		FixedHeightDownsampled ImageData `json:"fixed_height_downsampled"`
+		FixedWidth             ImageData `json:"fixed_width"`
+		FixedwidthStill        ImageData `json:"fixed_width_still"`
+		FixedwidthDownsampled  ImageData `json:"fixed_width_downsampled"`
+	} `json:"images"`
+}
+
+type paginatedResults struct {
+	Data       []*Gif `json:"data"`
+	Pagination struct {
+		TotalCount int `json:"total_count"`
+	} `json:"pagination"`
+}
+
+type singleResult struct {
+	Data *Gif `json:"data"`
+}
+
 /*
    TODO: Change @BOT_NAME to the same thing you entered when creating your Slack application.
    NOTE: command_arg_1 and command_arg_2 represent optional parameteras that you define
@@ -108,10 +148,17 @@ func sendResponse(slackClient *slack.RTM, message, slackChannel string) {
 
 	defer resp.Body.Close()
 
-	var Gif GIF
+	var giphy Gif
 
-	if err := json.NewDecoder(resp.Body).Decode(&Gif); err != nil {
+	if err := json.NewDecoder(resp.Body).Decode(&giphy); err != nil {
 		log.Println(err)
 	}
-	println(data)
+	println(giphy)
 }
+
+// Resources:
+// https://github.com/paddycarey/gophy/blob/master/gophy.go
+// https://make-school-courses.github.io/BEW-2.5-Strongly-Typed-Ecosystems/#/Lessons/Lesson07
+// https://developers.giphy.com/docs/api/endpoint#search
+// https://medium.com/@IndianGuru/consuming-json-apis-with-go-d711efc1dcf9
+//
