@@ -1,56 +1,51 @@
 package slack
 
 import (
-	"encoding/json"
 	"fmt"
-	"log"
-	"math/rand"
-	"net/http"
-	"os"
 	"strings"
 
 	"github.com/nlopes/slack"
 )
 
-// ImageData for API
-type ImageData struct {
-	URL    string `json:"url"`
-	Width  string `json:"width"`
-	Height string `json:"height"`
-	Size   string `json:"size"`
-	Frames string `json:"frames"`
-}
+// // ImageData for API
+// type ImageData struct {
+// 	URL    string `json:"url"`
+// 	Width  string `json:"width"`
+// 	Height string `json:"height"`
+// 	Size   string `json:"size"`
+// 	Frames string `json:"frames"`
+// }
 
-// Gif for API
-type Gif struct {
-	Type               string `json:"type"`
-	Id                 string `json:"id"`
-	URL                string `json:"url"`
-	Tags               string `json:"tags"`
-	BitlyGifURL        string `json:"bitly_gif_url"`
-	BitlyFullscreenURL string `json:"bitly_fullscreen_url"`
-	BitlyTiledURL      string `json:"bitly_tiled_url"`
-	Images             struct {
-		Original               ImageData `json:"original"`
-		FixedHeight            ImageData `json:"fixed_height"`
-		FixedHeightStill       ImageData `json:"fixed_height_still"`
-		FixedHeightDownsampled ImageData `json:"fixed_height_downsampled"`
-		FixedWidth             ImageData `json:"fixed_width"`
-		FixedwidthStill        ImageData `json:"fixed_width_still"`
-		FixedwidthDownsampled  ImageData `json:"fixed_width_downsampled"`
-	} `json:"images"`
-}
+// // Gif for API
+// type Gif struct {
+// 	Type               string `json:"type"`
+// 	Id                 string `json:"id"`
+// 	URL                string `json:"url"`
+// 	Tags               string `json:"tags"`
+// 	BitlyGifURL        string `json:"bitly_gif_url"`
+// 	BitlyFullscreenURL string `json:"bitly_fullscreen_url"`
+// 	BitlyTiledURL      string `json:"bitly_tiled_url"`
+// 	Images             struct {
+// 		Original               ImageData `json:"original"`
+// 		FixedHeight            ImageData `json:"fixed_height"`
+// 		FixedHeightStill       ImageData `json:"fixed_height_still"`
+// 		FixedHeightDownsampled ImageData `json:"fixed_height_downsampled"`
+// 		FixedWidth             ImageData `json:"fixed_width"`
+// 		FixedwidthStill        ImageData `json:"fixed_width_still"`
+// 		FixedwidthDownsampled  ImageData `json:"fixed_width_downsampled"`
+// 	} `json:"images"`
+// }
 
-type paginatedResults struct {
-	Data       []*Gif `json:"data"`
-	Pagination struct {
-		TotalCount int `json:"total_count"`
-	} `json:"pagination"`
-}
+// type paginatedResults struct {
+// 	Data       []*Gif `json:"data"`
+// 	Pagination struct {
+// 		TotalCount int `json:"total_count"`
+// 	} `json:"pagination"`
+// }
 
-type singleResult struct {
-	Data *Gif `json:"data"`
-}
+// type singleResult struct {
+// 	Data *Gif `json:"data"`
+// }
 
 /*
    TODO: Change @BOT_NAME to the same thing you entered when creating your Slack application.
@@ -155,58 +150,58 @@ func sendHelp(slackClient *slack.RTM, message, slackChannel string) {
 // sendResponse is NOT unimplemented --- write code in the function body to complete!
 
 func sendResponse(slackClient *slack.RTM, message, slackChannel string) {
-	specific := strings.Contains(message, "specific")
-	command := strings.ToLower(message)
-	message = strings.ReplaceAll(message, " ", "%20")
+	// specific := strings.Contains(message, "specific")
+	// command := strings.ToLower(message)
+	// message = strings.ReplaceAll(message, " ", "%20")
 
-	if specific {
-		message = strings.TrimPrefix(message, "specific%20")
-	}
-	println(message)
+	// if specific {
+	// 	message = strings.TrimPrefix(message, "specific%20")
+	// }
+	// println(message)
 
-	println("[RECEIVED] sendResponse:", command)
+	println("[RECEIVED] sendResponse:", message)
 
-	// START SLACKBOT CUSTOM CODE
-	// ===============================================================
-	// TODO:
-	//      1. Implement sendResponse for one or more of your custom Slackbot commands.
-	//         You could call an external API here, or create your own string response. Anything goes!
-	//      2. STRETCH: Write a goroutine that calls an external API based on the data received in this function.
-	// ===============================================================
-	// END SLACKBOT CUSTOM CODE\
-	url := fmt.Sprintf("http://api.giphy.com/v1/gifs/search?api_key=%s&q=%s&limit=10", os.Getenv("API_KEY"), message)
-	req, err := http.NewRequest("GET", url, nil)
+	// // START SLACKBOT CUSTOM CODE
+	// // ===============================================================
+	// // TODO:
+	// //      1. Implement sendResponse for one or more of your custom Slackbot commands.
+	// //         You could call an external API here, or create your own string response. Anything goes!
+	// //      2. STRETCH: Write a goroutine that calls an external API based on the data received in this function.
+	// // ===============================================================
+	// // END SLACKBOT CUSTOM CODE\
+	// url := fmt.Sprintf("http://api.giphy.com/v1/gifs/search?api_key=%s&q=%s&limit=10", os.Getenv("API_KEY"), message)
+	// req, err := http.NewRequest("GET", url, nil)
 
-	if err != nil {
-		log.Fatal("NewRequest: ", err)
-		return
-	}
+	// if err != nil {
+	// 	log.Fatal("NewRequest: ", err)
+	// 	return
+	// }
 
-	// q := req.URL.Query()
-	// q.Add("api_key", "4AZiEXqeJDmw6I1tzPAWobx790tH98f4")
-	// q.Add("q", message)
+	// // q := req.URL.Query()
+	// // q.Add("api_key", "4AZiEXqeJDmw6I1tzPAWobx790tH98f4")
+	// // q.Add("q", message)
 
-	client := &http.Client{}
+	// client := &http.Client{}
 
-	resp, err := client.Do(req)
-	if err != nil {
-		log.Fatal("Do: ", err)
-		return
-	}
+	// resp, err := client.Do(req)
+	// if err != nil {
+	// 	log.Fatal("Do: ", err)
+	// 	return
+	// }
 
-	defer resp.Body.Close()
+	// defer resp.Body.Close()
 
-	var data paginatedResults
+	// var data paginatedResults
 
-	if err := json.NewDecoder(resp.Body).Decode(&data); err != nil {
-		log.Println(err)
-	}
-	println(data.Pagination.TotalCount)
-	if specific {
-		slackClient.SendMessage(slackClient.NewOutgoingMessage(data.Data[0].Images.FixedHeightDownsampled.URL, slackChannel))
-	} else {
-		slackClient.SendMessage(slackClient.NewOutgoingMessage(data.Data[rand.Intn(9)].Images.FixedHeightDownsampled.URL, slackChannel))
-	}
+	// if err := json.NewDecoder(resp.Body).Decode(&data); err != nil {
+	// 	log.Println(err)
+	// }
+	// println(data.Pagination.TotalCount)
+	// if specific {
+	// 	slackClient.SendMessage(slackClient.NewOutgoingMessage(data.Data[0].Images.FixedHeightDownsampled.URL, slackChannel))
+	// } else {
+	// 	slackClient.SendMessage(slackClient.NewOutgoingMessage(data.Data[rand.Intn(9)].Images.FixedHeightDownsampled.URL, slackChannel))
+	// }
 }
 
 // Resources:
