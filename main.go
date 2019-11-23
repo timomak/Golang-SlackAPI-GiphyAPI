@@ -3,22 +3,30 @@ package main
 
 import (
 	"net/http"
-	"os"
 
-	"github.com/droxey/goslackit/slack"
+	"github.com/labstack/echo"
+	// "gopkg.in/go-playground/webhooks.v5"
+
+	// "github.com/droxey/goslackit/slack"
 	_ "github.com/joho/godotenv/autoload"
 )
 
 // main is our entrypoint, where the application initializes the Slackbot.
 func main() {
-	port := ":" + os.Getenv("PORT")
-	go http.ListenAndServe(port, nil)
-	slackIt()
+	// port := ":" + os.Getenv("PORT")
+	// go http.ListenAndServe(port, nil)
+
+	e := echo.New()
+	e.POST("/test", func(c echo.Context) error {
+		return c.String(http.StatusOK, "Hello, World!")
+	})
+	e.Logger.Fatal(e.Start(":3000"))
+	// slackIt()
 }
 
-// slackIt is a function that initializes the Slackbot.
-func slackIt() {
-	botToken := os.Getenv("BOT_OAUTH_ACCESS_TOKEN")
-	slackClient := slack.CreateSlackClient(botToken)
-	slack.RespondToEvents(slackClient)
-}
+// // slackIt is a function that initializes the Slackbot.
+// func slackIt() {
+// 	botToken := os.Getenv("BOT_OAUTH_ACCESS_TOKEN")
+// 	slackClient := slack.CreateSlackClient(botToken)
+// 	slack.RespondToEvents(slackClient)
+// }
