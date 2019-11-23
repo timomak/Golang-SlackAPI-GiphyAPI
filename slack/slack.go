@@ -4,7 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"math/rand"
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/nlopes/slack"
@@ -55,7 +57,45 @@ type singleResult struct {
    NOTE: command_arg_1 and command_arg_2 represent optional parameteras that you define
    in the Slack API UI
 */
-const helpMessage = "type in '@BOT_NAME <command_arg_1> <command_arg_2>'"
+const helpMessage = "type in '@BOT_NAME <command_arg_1> to get a random gif of that query, prefix your query with specific if you want the first result'"
+
+type ImageData struct {
+	URL    string `json:"url"`
+	Width  string `json:"width"`
+	Height string `json:"height"`
+	Size   string `json:"size"`
+	Frames string `json:"frames"`
+}
+type Gif struct {
+	Type               string `json:"type"`
+	Id                 string `json:"id"`
+	URL                string `json:"url"`
+	Tags               string `json:"tags"`
+	BitlyGifURL        string `json:"bitly_gif_url"`
+	BitlyFullscreenURL string `json:"bitly_fullscreen_url"`
+	BitlyTiledURL      string `json:"bitly_tiled_url"`
+	EmbedURL           string `json:"embed_url`
+	Images             struct {
+		Original               ImageData `json:"original"`
+		FixedHeight            ImageData `json:"fixed_height"`
+		FixedHeightStill       ImageData `json:"fixed_height_still"`
+		FixedHeightDownsampled ImageData `json:"fixed_height_downsampled"`
+		FixedWidth             ImageData `json:"fixed_width"`
+		FixedwidthStill        ImageData `json:"fixed_width_still"`
+		FixedwidthDownsampled  ImageData `json:"fixed_width_downsampled"`
+	} `json:"images"`
+}
+
+type paginatedResults struct {
+	Data       []*Gif `json:"data"`
+	Pagination struct {
+		TotalCount int `json:"total_count"`
+	} `json:"pagination"`
+}
+
+type singleResult struct {
+	Data *Gif `json:"data"`
+}
 
 /*
    CreateSlackClient sets up the slack RTM (real-timemessaging) client library,
@@ -115,7 +155,15 @@ func sendHelp(slackClient *slack.RTM, message, slackChannel string) {
 // sendResponse is NOT unimplemented --- write code in the function body to complete!
 
 func sendResponse(slackClient *slack.RTM, message, slackChannel string) {
+	specific := strings.Contains(message, "specific")
 	command := strings.ToLower(message)
+	message = strings.ReplaceAll(message, " ", "%20")
+
+	if specific {
+		message = strings.TrimPrefix(message, "specific%20")
+	}
+	println(message)
+
 	println("[RECEIVED] sendResponse:", command)
 
 	// START SLACKBOT CUSTOM CODE
@@ -126,7 +174,7 @@ func sendResponse(slackClient *slack.RTM, message, slackChannel string) {
 	//      2. STRETCH: Write a goroutine that calls an external API based on the data received in this function.
 	// ===============================================================
 	// END SLACKBOT CUSTOM CODE\
-	url := "api.giphy.com/v1/gifs/search"
+	url := fmt.Sprintf("http://api.giphy.com/v1/gifs/search?api_key=%s&q=%s&limit=10", os.Getenv("API_KEY"), message)
 	req, err := http.NewRequest("GET", url, nil)
 
 	if err != nil {
@@ -134,9 +182,9 @@ func sendResponse(slackClient *slack.RTM, message, slackChannel string) {
 		return
 	}
 
-	q := req.URL.Query()
-	q.Add("api_key", "4AZiEXqeJDmw6I1tzPAWobx790tH98f4")
-	q.Add("q", message)
+	// q := req.URL.Query()
+	// q.Add("api_key", "4AZiEXqeJDmw6I1tzPAWobx790tH98f4")
+	// q.Add("q", message)
 
 	client := &http.Client{}
 
@@ -148,12 +196,17 @@ func sendResponse(slackClient *slack.RTM, message, slackChannel string) {
 
 	defer resp.Body.Close()
 
-	var giphy Gif
+	var data paginatedResults
 
-	if err := json.NewDecoder(resp.Body).Decode(&giphy); err != nil {
+	if err := json.NewDecoder(resp.Body).Decode(&data); err != nil {
 		log.Println(err)
 	}
-	println(giphy)
+	println(data.Pagination.TotalCount)
+	if specific {
+		slackClient.SendMessage(slackClient.NewOutgoingMessage(data.Data[0].Images.FixedHeightDownsampled.URL, slackChannel))
+	} else {
+		slackClient.SendMessage(slackClient.NewOutgoingMessage(data.Data[rand.Intn(9)].Images.FixedHeightDownsampled.URL, slackChannel))
+	}
 }
 
 // Resources:
