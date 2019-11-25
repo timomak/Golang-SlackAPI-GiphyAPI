@@ -91,5 +91,6 @@ func main() {
 func slackIt(message string) {
 	botToken := os.Getenv("BOT_OAUTH_ACCESS_TOKEN")
 	slackClient := CreateSlackClient(botToken)
+	fmt.Println("SENDING MESSASSAGE TO SLACK CHANNEL:", message)
 	NotifySlackChannel(slackClient, message)
 }
