@@ -2,7 +2,6 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 	"os"
 
@@ -22,51 +21,42 @@ func CreateSlackClient(apiKey string) *slack.RTM {
 }
 
 // NotifySlackChannel sends a message to a Slack Channel using the Slack API
-func NotifySlackChannel(slackClient *slack.RTM, message string) {
-	slackMsg := slack.MsgOptionText(message, false)  // Not sure why the false.
-	slackClient.PostMessage("portal-devs", slackMsg) // Channel name, message
+func NotifySlackChannel(slackClient *slack.RTM, message, channel string) {
+	slackMsg := slack.MsgOptionText(message, false) // Not sure why the false.
+	slackClient.PostMessage(channel, slackMsg)      // Channel name, message
 }
 
 // main is our entrypoint, where the application initializes the Slackbot.
 func main() {
-	// hook, _ := github.New(github.Options.Secret("Wassup"))// Secret for Webhook.
-	hook, _ := github.New(github.Options.Secret(string(os.Getenv("WEBHOOK"))))
+	hook, _ := github.New(github.Options.Secret(string(os.Getenv("WEBHOOK")))) // Secret for Webhook.
 
 	e := echo.New()
 	e.POST("/test", func(c echo.Context) error {
 		payload, err := hook.Parse(c.Request(), github.PushEvent)
 		if err != nil {
 			if err == github.ErrEventNotFound {
-				// ok event wasn;t one of the ones asked to be parsed
+				// ok event wasn't one of the ones asked to be parsed
 			}
 		}
 		switch payload.(type) {
 
 		case github.PushPayload:
 			release := payload.(github.PushPayload)
-			// Do whatever you want from here...
-			// fmt.Printf("%+v", release)
-			// fmt.Printf("EMAIL: %+v", release.Pusher.Email)
 			newMessage := string(release.Pusher.Name) + " just made a commit to the " + string(release.Repository.FullName) + "repo.\nLook at the changes: " + string(release.Repository.HTMLURL) + "\n"
 
-			fmt.Printf("%+v just made a commit to the %+v repo.\nLook at the changes: %+v\n", release.Pusher.Name, release.Repository.FullName, release.Repository.HTMLURL)
-			slackIt(newMessage)
-			// case github.PullRequestPayload: .
-			// 	pullRequest := payload.(github.PullRequestPayload)
-			// 	// Do whatever you want from here...
-			// 	fmt.Printf("%+v", pullRequest)
-
+			// fmt.Printf("%+v just made a commit to the %+v repo.\nLook at the changes: %+v\n", release.Pusher.Name, release.Repository.FullName, release.Repository.HTMLURL)
+			slackIt(newMessage, "portal-devs") // Message, Channel Name
 		}
 
-		return c.String(http.StatusOK, "Hello, World!")
+		return c.String(http.StatusOK, "Success.")
 	})
 	e.Logger.Fatal(e.Start(":3000"))
 }
 
-// slackIt is a function that initializes the Slackbot.
-func slackIt(message string) {
+// slackIt is a function that initializes the Slackbot and sends a custom message to a specific channel.
+func slackIt(message, channel string) {
 	botToken := os.Getenv("BOT_OAUTH_ACCESS_TOKEN")
 	slackClient := CreateSlackClient(botToken)
-	fmt.Println("SENDING MESSASSAGE TO SLACK CHANNEL:", message)
-	NotifySlackChannel(slackClient, message)
+	// fmt.Println("SENDING MESSASSAGE TO SLACK CHANNEL:", message)
+	NotifySlackChannel(slackClient, message, channel)
 }
