@@ -26,7 +26,9 @@ func NotifySlackChannel(slackClient *slack.RTM, message string) {
 	// if strings.ToLower(message) != "help" {
 	// 	return
 	// }
-	slackClient.SendMessage(slackClient.NewOutgoingMessage(message, "portal-devs"))
+	// slackClient.SendMessage(slackClient.NewOutgoingMessage(message, "portal-devs"))
+	slackMsg := slack.MsgOptionText(message, false)
+	slackClient.PostMessage("portal-devs", slackMsg)
 }
 
 // // GetSlackClient will return an authenticated slack
