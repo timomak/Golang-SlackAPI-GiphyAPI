@@ -21,7 +21,7 @@ func main() {
 
 	e := echo.New()
 	e.POST("/test", func(c echo.Context) error {
-		payload, err := hook.Parse(&http.Request{}, github.PushEvent)
+		payload, err := hook.Parse(c.Request(), github.PushEvent)
 		if err != nil {
 			if err == github.ErrEventNotFound {
 				// ok event wasn;t one of the ones asked to be parsed
