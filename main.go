@@ -10,10 +10,10 @@ import (
 	"github.com/nlopes/slack"
 	"gopkg.in/go-playground/webhooks.v5/github"
 
-	// "github.com/droxey/goslackit/slack"
 	_ "github.com/joho/godotenv/autoload"
 )
 
+// CreateSlackClient Create a client for the slack API
 func CreateSlackClient(apiKey string) *slack.RTM {
 	api := slack.New(apiKey)
 	rtm := api.NewRTM()
@@ -21,42 +21,16 @@ func CreateSlackClient(apiKey string) *slack.RTM {
 	return rtm
 }
 
-// sendHelp is a working help message, for reference.
+// NotifySlackChannel sends a message to a Slack Channel using the Slack API
 func NotifySlackChannel(slackClient *slack.RTM, message string) {
-	// if strings.ToLower(message) != "help" {
-	// 	return
-	// }
-	// slackClient.SendMessage(slackClient.NewOutgoingMessage(message, "portal-devs"))
-	slackMsg := slack.MsgOptionText(message, false)
-	slackClient.PostMessage("portal-devs", slackMsg)
+	slackMsg := slack.MsgOptionText(message, false)  // Not sure why the false.
+	slackClient.PostMessage("portal-devs", slackMsg) // Channel name, message
 }
 
-// // GetSlackClient will return an authenticated slack
-// // api object that you can then run slack methods on
-// func GetSlackClient() *slack.Client {
-//     return slack.New(os.Getenv("SLACK_TOKEN"))
-// }
-// // SiteDownMessage sends a message in slack channel when
-// // a site returns an error code
-// func SiteDownMessage(statusCode int, url, loadbalancerIP string) error {
-//     client := GetSlackClient()
-//     // get the error message from the status code
-//     statusMsg := http.StatusText(statusCode)
-//     // message to send
-//     notifyMsg :=
-//     slackMsg := slack.MsgOptionText(notifyMsg, false)
-//     // send the message in the group
-//     _, timestamp, err := client.PostMessage("portal-devs", slackMsg)
-//     if err != nil {
-//         return err
-//     }
-
-// Trying again
 // main is our entrypoint, where the application initializes the Slackbot.
 func main() {
-	// port := ":" + os.Getenv("PORT")
-	// go http.ListenAndServe(port, nil)
-	hook, _ := github.New(github.Options.Secret("Wassup"))
+	// hook, _ := github.New(github.Options.Secret("Wassup"))// Secret for Webhook.
+	hook, _ := github.New(github.Options.Secret(string(os.Getenv("WEBHOOK"))))
 
 	e := echo.New()
 	e.POST("/test", func(c echo.Context) error {
