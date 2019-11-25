@@ -33,6 +33,7 @@ func main() {
 			release := payload.(github.PushPayload)
 			// Do whatever you want from here...
 			fmt.Printf("%+v", release)
+			fmt.Printf("%+v", release.Pusher.Email)
 
 			// case github.PullRequestPayload:
 			// 	pullRequest := payload.(github.PullRequestPayload)
