@@ -35,6 +35,8 @@ func main() {
 			// fmt.Printf("%+v", release)
 			fmt.Printf("EMAIL: %+v", release.Pusher.Email)
 
+			fmt.Printf("%+v just made a commit to the %+v repo on the %+v branch of %+v MBs", release.Pusher.Name, release.Repository.FullName, release.Repository.BranchesURL, release.Repository.Size)
+
 			// case github.PullRequestPayload: .
 			// 	pullRequest := payload.(github.PullRequestPayload)
 			// 	// Do whatever you want from here...
