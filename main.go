@@ -2,10 +2,11 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/labstack/echo"
-	// "gopkg.in/go-playground/webhooks.v5"
+	"gopkg.in/go-playground/webhooks.v5/github"
 
 	// "github.com/droxey/goslackit/slack"
 	_ "github.com/joho/godotenv/autoload"
@@ -15,9 +16,29 @@ import (
 func main() {
 	// port := ":" + os.Getenv("PORT")
 	// go http.ListenAndServe(port, nil)
+	hook, _ := github.New(github.Options.Secret("Wassup"))
 
 	e := echo.New()
 	e.POST("/test", func(c echo.Context) error {
+		payload, err := hook.Parse(&http.Request{}, github.PushEvent)
+		if err != nil {
+			if err == github.ErrEventNotFound {
+				// ok event wasn;t one of the ones asked to be parsed
+			}
+		}
+		switch payload.(type) {
+
+		case github.PushPayload:
+			release := payload.(github.PushPayload)
+			// Do whatever you want from here...
+			fmt.Printf("%+v", release)
+
+			// case github.PullRequestPayload:
+			// 	pullRequest := payload.(github.PullRequestPayload)
+			// 	// Do whatever you want from here...
+			// 	fmt.Printf("%+v", pullRequest)
+		}
+
 		return c.String(http.StatusOK, "Hello, World!")
 	})
 	e.Logger.Fatal(e.Start(":3000"))
