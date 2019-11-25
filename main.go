@@ -31,7 +31,7 @@ func main() {
 	hook, _ := github.New(github.Options.Secret(string(os.Getenv("WEBHOOK")))) // Secret for Webhook.
 
 	e := echo.New()
-	e.POST("/test", func(c echo.Context) error {
+	e.POST("/push", func(c echo.Context) error {
 		payload, err := hook.Parse(c.Request(), github.PushEvent)
 		if err != nil {
 			if err == github.ErrEventNotFound {
