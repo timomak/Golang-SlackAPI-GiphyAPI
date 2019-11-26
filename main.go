@@ -28,7 +28,6 @@ func NotifySlackChannel(slackClient *slack.RTM, message, channel string) {
 // main is our entrypoint, where the application initializes the Slackbot.
 func main() {
 	hook, _ := github.New(github.Options.Secret(string(os.Getenv("WEBHOOK")))) // Secret for Webhook.
-
 	e := echo.New()
 	e.POST("/push", func(c echo.Context) error {
 		payload, err := hook.Parse(c.Request(), github.PushEvent)
