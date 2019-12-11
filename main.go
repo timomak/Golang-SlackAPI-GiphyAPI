@@ -58,3 +58,5 @@ func slackIt(message, channel string) {
 	// fmt.Println("SENDING MESSASSAGE TO SLACK CHANNEL:", message)
 	NotifySlackChannel(slackClient, message, channel)
 }
+
+// Tryna push
