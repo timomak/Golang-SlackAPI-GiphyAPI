@@ -57,4 +57,5 @@ Based on this class' project: [BEW 2.5 Go Routines Class 7](https://github.com/M
 1. Set `password` as your Secret or whatever you set in *Step 5 of Part 2*.
 
 ### DONE.
-> If you followed the instructions properly, you will be pinged over slack each time someone makes a commit to that repo. Like so: ![](ping.png)
+> If you followed the instructions properly, you will be pinged over slack each time someone makes a commit to that repo. Like so: 
+![](ping.png)
