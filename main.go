@@ -39,8 +39,9 @@ func main() {
 		switch payload.(type) {
 
 		case github.PushPayload:
-			release := payload.(github.PushPayload)
-			newMessage := string(release.Pusher.Name) + " just made a commit to the " + string(release.Repository.FullName) + " repo.\nLook at the changes: " + string(release.Repository.HTMLURL) + "\n"
+			newMessage := "A commit has just been made to timomak/Golang-SlackAPI-GiphyAPI"
+			// release := payload.(github.PushPayload)
+			// newMessage := string(release.Pusher.Name) + " just made a commit to the " + string(release.Repository.FullName) + " repo.\nLook at the changes: " + string(release.Repository.HTMLURL) + "\n"
 
 			// fmt.Printf("%+v just made a commit to the %+v repo.\nLook at the changes: %+v\n", release.Pusher.Name, release.Repository.FullName, release.Repository.HTMLURL)
 			slackIt(newMessage, "portal-devs") // Message, Channel Name
